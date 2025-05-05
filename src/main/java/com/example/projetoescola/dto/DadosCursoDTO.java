@@ -1,6 +1,5 @@
 package com.example.projetoescola.dto;
 
-import com.example.projetoescola.models.CategoriaCurso;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
