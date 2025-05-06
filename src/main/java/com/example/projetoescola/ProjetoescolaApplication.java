@@ -6,14 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.example.projetoescola.config.JwtService;
 import com.example.projetoescola.models.CategoriaCurso;
 import com.example.projetoescola.models.Curso;
 import com.example.projetoescola.models.Pessoa;
+import com.example.projetoescola.models.Usuario;
 import com.example.projetoescola.repositories.CategoriaCursoRepository;
 import com.example.projetoescola.repositories.CursoRepository;
 import com.example.projetoescola.repositories.PessoaRepository;
+import com.example.projetoescola.repositories.UsuarioRepository;
 
 @SpringBootApplication
 public class ProjetoescolaApplication {
@@ -62,7 +67,23 @@ public class ProjetoescolaApplication {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(ProjetoescolaApplication.class, args);
+		ConfigurableApplicationContext contexto = SpringApplication.run(ProjetoescolaApplication.class, args);
+		JwtService service = contexto.getBean(JwtService.class);
+		UsuarioRepository usuarioRepository = contexto.getBean(UsuarioRepository.class);
+		PasswordEncoder passwordEncoder = contexto.getBean(PasswordEncoder.class);
+
+		Usuario usuario = new Usuario(0, "Igor", "igor2.colombini@gmail.com", passwordEncoder.encode("123"),"Administrador");
+		Usuario usuario2 = new Usuario(0, "Igor", "igor.colombini@gmail.com", passwordEncoder.encode("123"),"Administrador");
+		
+		String token = service.gerarToken(usuario);
+		System.out.println("------------------------------------------------------");
+		System.out.println(token);
+		boolean isValid = service.validarToken(token);
+		System.out.println("Token Válido? " + isValid);
+		System.out.println("Usuário: " + service.obterLoginUsuario(token));
+
+		usuarioRepository.save(usuario);
+		usuarioRepository.save(usuario2);
 	}
 
 }
